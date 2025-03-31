@@ -63,15 +63,41 @@ export class DockerService {
         this.stop(project.containerId).catch(console.error);
       }
       
-      // Run new container, publish the configured port
-      const run = spawn('docker', [
+      // Prepare docker run arguments
+      const dockerArgs = [
         'run',
         '-d',
-        '--restart=unless-stopped',
-        '-p', `${project.port}:${project.port}`,
-        '--name', `minicd_${project.name}_${Date.now()}`.toLowerCase().replace(/[^a-z0-9_]/g, '_'),
-        imageName,
-      ]);
+        '--restart=unless-stopped'
+      ];
+      
+      // Handle port mapping - use exposedPort if configured, otherwise use same port
+      if (project.exposedPort) {
+        dockerArgs.push('-p', `${project.exposedPort}:${project.port}`);
+        log += `Setting up port mapping: ${project.exposedPort}:${project.port}\n`;
+      } else {
+        dockerArgs.push('-p', `${project.port}:${project.port}`);
+        log += `Setting up port mapping: ${project.port}:${project.port}\n`;
+      }
+      
+      // Add container name
+      const containerName = `minicd_${project.name}_${Date.now()}`.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+      dockerArgs.push('--name', containerName);
+      
+      // Add environment variables if available
+      if (project.environmentVariables && project.environmentVariables.length > 0) {
+        log += `Setting up environment variables...\n`;
+        project.environmentVariables.forEach(variable => {
+          dockerArgs.push('-e', `${variable.key}=${variable.value}`);
+        });
+      }
+      
+      // Add image name
+      dockerArgs.push(imageName);
+      
+      log += `Starting container with name: ${containerName}\n`;
+      
+      // Run the container
+      const run = spawn('docker', dockerArgs);
 
       run.stdout.on('data', (data) => {
         const output = data.toString().trim();
