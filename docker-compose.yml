@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # MongoDB サービス
+  mongodb:
+    image: mongo:latest
+    container_name: minicd-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=minicd
+    networks:
+      - minicd-network
+
+  # MiniCD アプリケーション
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: minicd-app
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/minicd
+      - GITHUB_WEBHOOK_SECRET=your_webhook_secret
+      - STORAGE_PATH=/app/storage
+      - NODE_ENV=development
+    depends_on:
+      - mongodb
+    networks:
+      - minicd-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  minicd-network:
+    driver: bridge

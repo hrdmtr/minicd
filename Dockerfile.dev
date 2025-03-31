@@ -1,0 +1,25 @@
+FROM node:16-alpine
+
+# Docker CLIをインストール
+RUN apk add --no-cache docker-cli git
+
+# アプリディレクトリを作成
+WORKDIR /app
+
+# package.jsonとpackage-lock.jsonをコピー
+COPY package*.json ./
+
+# 依存関係のインストール
+RUN npm install
+
+# アプリケーションのソースをコピー
+COPY . .
+
+# 保存ディレクトリの作成
+RUN mkdir -p /app/storage
+
+# TypeScriptをビルド
+RUN npm run build
+
+# 開発モードで実行
+CMD ["npm", "run", "dev"]
