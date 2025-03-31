@@ -6,7 +6,7 @@
         <h1 class="display-4 fw-bold">MiniCD</h1>
         <p class="lead mb-4">A lightweight continuous deployment platform designed for small teams and projects</p>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <a href="/projects/new" class="btn btn-light btn-lg px-4 gap-3">Start Deploying</a>
+          <a href="/projects/new" class="btn btn-light btn-lg px-4 gap-3">Get Started Now</a>
           <a href="#features" class="btn btn-outline-light btn-lg px-4">Learn More</a>
         </div>
       </div>
@@ -83,8 +83,8 @@
           <div class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 50px; height: 50px;">
             <span class="fw-bold">1</span>
           </div>
-          <h5>Connect Repository</h5>
-          <p>Link your GitHub repository to MiniCD</p>
+          <h5><%= __('landing.howItWorks.step1.title') %></h5>
+          <p><%= __('landing.howItWorks.step1.description') %></p>
         </div>
       </div>
       <div class="col-md-3">
@@ -92,8 +92,8 @@
           <div class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 50px; height: 50px;">
             <span class="fw-bold">2</span>
           </div>
-          <h5>Configure Settings</h5>
-          <p>Specify branch, port, and deployment options</p>
+          <h5><%= __('landing.howItWorks.step2.title') %></h5>
+          <p><%= __('landing.howItWorks.step2.description') %></p>
         </div>
       </div>
       <div class="col-md-3">
@@ -101,8 +101,8 @@
           <div class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 50px; height: 50px;">
             <span class="fw-bold">3</span>
           </div>
-          <h5>Set up Webhook</h5>
-          <p>Add the MiniCD webhook to your repository</p>
+          <h5><%= __('landing.howItWorks.step3.title') %></h5>
+          <p><%= __('landing.howItWorks.step3.description') %></p>
         </div>
       </div>
       <div class="col-md-3">
@@ -110,8 +110,8 @@
           <div class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 50px; height: 50px;">
             <span class="fw-bold">4</span>
           </div>
-          <h5>Automatic Deployment</h5>
-          <p>Your code deploys automatically on push</p>
+          <h5><%= __('landing.howItWorks.step4.title') %></h5>
+          <p><%= __('landing.howItWorks.step4.description') %></p>
         </div>
       </div>
     </div>
@@ -123,11 +123,11 @@
   <div class="container">
     <div class="row mb-4">
       <div class="col">
-        <h2 class="fw-bold">Your Projects</h2>
-        <p class="lead">Manage and monitor all your deployments in one place</p>
+        <h2 class="fw-bold"><%= __('dashboard.yourProjects') %></h2>
+        <p class="lead"><%= __('projects.subtitle') %></p>
       </div>
       <div class="col-auto">
-        <a href="/projects/new" class="btn btn-primary">New Project</a>
+        <a href="/projects/new" class="btn btn-primary"><%= __('projects.newProject') %></a>
       </div>
     </div>
 
@@ -185,8 +185,8 @@
               </div>
             <% } else { %>
               <div class="text-center py-5">
-                <p class="mb-3">You don't have any projects yet.</p>
-                <a href="/projects/new" class="btn btn-primary">Create Your First Project</a>
+                <p class="mb-3"><%= __('dashboard.noProjects') %></p>
+                <a href="/projects/new" class="btn btn-primary"><%= __('dashboard.createFirstProject') %></a>
               </div>
             <% } %>
           </div>
@@ -201,9 +201,9 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8">
-        <h2 class="fw-bold mb-3">Ready to simplify your deployment process?</h2>
-        <p class="lead mb-4">MiniCD makes continuous deployment accessible for teams of all sizes.</p>
-        <a href="/projects/new" class="btn btn-light btn-lg px-4">Get Started Now</a>
+        <h2 class="fw-bold mb-3"><%= __('landing.cta.title') %></h2>
+        <p class="lead mb-4"><%= __('landing.cta.subtitle') %></p>
+        <a href="/projects/new" class="btn btn-light btn-lg px-4"><%= __('landing.cta.button') %></a>
       </div>
     </div>
   </div>

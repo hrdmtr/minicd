@@ -1,0 +1,214 @@
+{
+  "app": {
+    "name": "MiniCD",
+    "tagline": "A lightweight continuous deployment platform designed for small teams and projects"
+  },
+  "common": {
+    "actions": "Actions",
+    "add": "Add",
+    "back": "Back",
+    "cancel": "Cancel",
+    "create": "Create",
+    "delete": "Delete",
+    "deploy": "Deploy",
+    "deployNow": "Deploy Now",
+    "details": "Details",
+    "edit": "Edit",
+    "error": "Error",
+    "name": "Name",
+    "port": "Port",
+    "save": "Save",
+    "settings": "Settings",
+    "status": "Status",
+    "submit": "Submit",
+    "update": "Update"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "deployments": "Deployments",
+    "documentation": "Documentation",
+    "home": "Home",
+    "login": "Login",
+    "logout": "Logout",
+    "projects": "Projects",
+    "settings": "Settings"
+  },
+  "login": {
+    "title": "Login to MiniCD",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Login",
+    "demoNotice": "This is a demo login page. Any credentials will work."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to MiniCD - a lightweight continuous deployment tool",
+    "newProject": "New Project",
+    "yourProjects": "Your Projects",
+    "noProjects": "You don't have any projects yet.",
+    "createFirstProject": "Create Your First Project"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Manage your deployment projects",
+    "newProject": "New Project",
+    "createNewProject": "Create New Project",
+    "createProjectSubtitle": "Set up a new project for continuous deployment",
+    "noProjects": "No projects found",
+    "createFirstProjectHelp": "Create your first project to get started with MiniCD",
+    "projectDetails": "Project Details",
+    "editProject": "Edit Project",
+    "deleteProject": "Delete Project",
+    "confirmDelete": "Are you sure you want to delete this project?",
+    "deleteWarning": "This action cannot be undone. All deployment history will be permanently removed.",
+    "fields": {
+      "name": "Project Name",
+      "nameHelp": "A unique name for your project",
+      "repositoryUrl": "GitHub Repository URL",
+      "repositoryUrlHelp": "The URL to your Git repository",
+      "branch": "Branch",
+      "branchHelp": "The branch that will trigger deployments",
+      "port": "Container Port",
+      "portHelp": "The port your application listens on inside the container",
+      "active": "Active",
+      "activeHelp": "Inactive projects won't be deployed automatically",
+      "autoDeployment": "Enable automatic deployments",
+      "autoDeploymentHelp": "When enabled, pushes to the specified branch will trigger deployments"
+    },
+    "tips": {
+      "title": "Tips",
+      "dockerfile": "Your repository should contain a Dockerfile at the root level.",
+      "portExpose": "We recommend exposing your app on the same port that you specify here.",
+      "webhook": "After creating your project, you'll need to set up a GitHub webhook to enable automatic deployments."
+    },
+    "notes": {
+      "title": "Notes",
+      "repoChange": "Changing the repository URL or branch will affect future deployments.",
+      "portChange": "If you change the port, make sure your application is configured to listen on this port inside the container.",
+      "inactiveHelp": "Setting a project to inactive will prevent automatic deployments but you can still deploy manually."
+    }
+  },
+  "deployments": {
+    "title": "Deployments",
+    "subtitle": "View all deployment history across projects",
+    "viewProjects": "View Projects",
+    "noDeployments": "No deployments found",
+    "noDeploymentsHelp": "Create a project and deploy it to see deployment history",
+    "deploymentDetails": "Deployment Details",
+    "deploymentHistory": "Deployment History",
+    "logs": "Deployment Logs",
+    "retryDeployment": "Retry Deployment",
+    "buildStatus": {
+      "success": "Success",
+      "failure": "Failed",
+      "pending": "Pending",
+      "none": "None"
+    },
+    "trigger": {
+      "push": "Push",
+      "pull_request": "Pull Request",
+      "manual": "Manual"
+    },
+    "fields": {
+      "date": "Date",
+      "project": "Project",
+      "commit": "Commit",
+      "branch": "Branch",
+      "status": "Status",
+      "triggeredBy": "Triggered By",
+      "started": "Started",
+      "finished": "Finished",
+      "duration": "Duration",
+      "inProgress": "In progress"
+    }
+  },
+  "containers": {
+    "title": "Container Information",
+    "containerId": "Container ID",
+    "status": "Status",
+    "running": "Running",
+    "stopped": "Stopped",
+    "restart": "Restart Container",
+    "stop": "Stop Container"
+  },
+  "webhooks": {
+    "title": "GitHub Webhook Setup",
+    "instructions": "To enable automatic deployments, add a webhook in your GitHub repository:",
+    "steps": {
+      "1": "Go to your repository settings on GitHub (Settings > Webhooks > Add webhook)",
+      "2": "Set the Payload URL to:",
+      "3": "Set the Content Type to application/json",
+      "4": "Set the Secret to the value from your GITHUB_WEBHOOK_SECRET environment variable",
+      "5": "Choose \"Just the push event\" or select individual events (Push and Pull requests)",
+      "6": "Click \"Add webhook\""
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure MiniCD settings",
+    "language": {
+      "title": "Language",
+      "subtitle": "Choose your preferred language",
+      "en": "English",
+      "ja": "日本語 (Japanese)"
+    },
+    "theme": {
+      "title": "Theme",
+      "subtitle": "Choose your preferred color theme",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "save": "Save Settings",
+    "resetToDefaults": "Reset to Defaults",
+    "settingsSaved": "Settings saved successfully"
+  },
+  "landing": {
+    "features": {
+      "title": "Simplified Continuous Deployment",
+      "subtitle": "Deploy your applications with minimal configuration",
+      "fastDeployment": {
+        "title": "Fast Deployment",
+        "description": "Deploy your code in minutes with automated build and deployment processes."
+      },
+      "githubIntegration": {
+        "title": "GitHub Integration",
+        "description": "Seamless integration with GitHub webhooks for automatic deployments on push or pull requests."
+      },
+      "dockerContainers": {
+        "title": "Docker Containers",
+        "description": "Deploy your applications in isolated Docker containers for consistency and security."
+      }
+    },
+    "howItWorks": {
+      "title": "How MiniCD Works",
+      "subtitle": "Simple steps to get your applications deployed",
+      "step1": {
+        "title": "Connect Repository",
+        "description": "Link your GitHub repository to MiniCD"
+      },
+      "step2": {
+        "title": "Configure Settings",
+        "description": "Specify branch, port, and deployment options"
+      },
+      "step3": {
+        "title": "Set up Webhook",
+        "description": "Add the MiniCD webhook to your repository"
+      },
+      "step4": {
+        "title": "Automatic Deployment",
+        "description": "Your code deploys automatically on push"
+      }
+    },
+    "cta": {
+      "title": "Ready to simplify your deployment process?",
+      "subtitle": "MiniCD makes continuous deployment accessible for teams of all sizes.",
+      "button": "Get Started Now"
+    }
+  },
+  "error": {
+    "title": "Error",
+    "notFound": "Not Found",
+    "notFoundMessage": "The page you're looking for does not exist.",
+    "backHome": "Back to Home"
+  }
+}
