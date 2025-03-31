@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import { GitService } from './GitService';
 import { DockerService } from './DockerService';
 import Project, { IProject } from '../models/Project';
