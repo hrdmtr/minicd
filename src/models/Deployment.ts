@@ -1,6 +1,13 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { IProject } from './Project';
 
+export interface DeploymentStep {
+  name: string;
+  status: 'success' | 'failure' | 'pending' | 'not_started';
+  startedAt?: Date;
+  finishedAt?: Date;
+}
+
 export interface IDeployment extends Document {
   project: IProject['_id'];
   commitHash: string;
@@ -10,7 +17,25 @@ export interface IDeployment extends Document {
   finishedAt?: Date;
   triggeredBy: 'push' | 'pull_request' | 'manual';
   branchName: string;
+  containerId?: string;
+  exposedPort?: number;
+  containerUrl?: string;
+  steps: DeploymentStep[];
 }
+
+const DeploymentStepSchema: Schema = new Schema(
+  {
+    name: { type: String, required: true },
+    status: {
+      type: String,
+      enum: ['success', 'failure', 'pending', 'not_started'],
+      default: 'not_started'
+    },
+    startedAt: { type: Date },
+    finishedAt: { type: Date }
+  },
+  { _id: false }
+);
 
 const DeploymentSchema: Schema = new Schema(
   {
@@ -30,6 +55,19 @@ const DeploymentSchema: Schema = new Schema(
       required: true,
     },
     branchName: { type: String, required: true },
+    containerId: { type: String },
+    exposedPort: { type: Number },
+    containerUrl: { type: String },
+    steps: {
+      type: [DeploymentStepSchema],
+      default: [
+        { name: 'Source Code Preparation', status: 'not_started' },
+        { name: 'Commit Information', status: 'not_started' },
+        { name: 'Docker Build', status: 'not_started' },
+        { name: 'Container Launch', status: 'not_started' },
+        { name: 'Deployment Finalization', status: 'not_started' }
+      ]
+    }
   },
   { timestamps: true }
 );

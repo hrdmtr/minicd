@@ -1,0 +1,126 @@
+<div class="row mb-4">
+  <div class="col">
+    <h1><%= locals.__ ? __('settings.title') : 'Settings' %></h1>
+    <p class="lead"><%= locals.__ ? __('settings.subtitle') : 'Configure MiniCD settings' %></p>
+  </div>
+</div>
+
+<% if (successMessage) { %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <%= locals.__ ? __('settings.settingsSaved') : successMessage %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<% if (error) { %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <%= error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <form action="/settings" method="POST">
+          <!-- Language Settings -->
+          <div class="mb-4">
+            <h5 class="mb-3"><%= locals.__ ? __('settings.language.title') : 'Language' %></h5>
+            <p class="text-muted mb-3"><%= locals.__ ? __('settings.language.subtitle') : 'Choose your preferred language' %></p>
+            
+            <div class="d-flex flex-wrap gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="language" id="langEn" value="en" <%= currentLanguage === 'en' ? 'checked' : '' %>>
+                <label class="form-check-label" for="langEn">
+                  <img src="https://flagcdn.com/w20/us.png" width="20" class="me-2" alt="English">
+                  <%= locals.__ ? __('settings.language.en') : 'English' %>
+                </label>
+              </div>
+              
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="language" id="langJa" value="ja" <%= currentLanguage === 'ja' ? 'checked' : '' %>>
+                <label class="form-check-label" for="langJa">
+                  <img src="https://flagcdn.com/w20/jp.png" width="20" class="me-2" alt="Japanese">
+                  <%= locals.__ ? __('settings.language.ja') : '日本語 (Japanese)' %>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <!-- Theme Settings (Future Functionality) -->
+          <div class="mb-4">
+            <h5 class="mb-3"><%= locals.__ ? __('settings.theme.title') : 'Theme' %></h5>
+            <p class="text-muted mb-3"><%= locals.__ ? __('settings.theme.subtitle') : 'Choose your preferred color theme' %></p>
+            
+            <div class="d-flex flex-wrap gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="theme" id="themeLight" value="light" checked>
+                <label class="form-check-label" for="themeLight">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun me-2" viewBox="0 0 16 16">
+                    <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
+                  </svg>
+                  <%= locals.__ ? __('settings.theme.light') : 'Light' %>
+                </label>
+              </div>
+              
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="theme" id="themeDark" value="dark" disabled>
+                <label class="form-check-label" for="themeDark">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon me-2" viewBox="0 0 16 16">
+                    <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278M4.858 1.311A7.27 7.27 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.32 7.32 0 0 0 5.205-2.162q-.506.063-1.029.063c-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286"/>
+                  </svg>
+                  <%= locals.__ ? __('settings.theme.dark') : 'Dark' %> <small class="text-muted">(Coming soon)</small>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+            <button type="reset" class="btn btn-outline-secondary me-md-2"><%= locals.__ ? __('settings.resetToDefaults') : 'Reset to Defaults' %></button>
+            <button type="submit" class="btn btn-primary"><%= locals.__ ? __('settings.save') : 'Save Settings' %></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card shadow-sm bg-light">
+      <div class="card-body">
+        <h5 class="card-title mb-3"><%= currentLanguage === 'ja' ? 'ヘルプ & ガイド' : 'Help & Guide' %></h5>
+        <div class="mb-3">
+          <strong><%= currentLanguage === 'ja' ? '言語設定について' : 'About Language Settings' %></strong>
+          <p class="small text-muted mb-0">
+            <%= currentLanguage === 'ja' ? 
+              '選択した言語は、ブラウザのCookieに保存され、次回のアクセス時にも適用されます。表示言語を変更すると、すべてのページが選択した言語に切り替わります。' : 
+              'Your selected language is stored in browser cookies and will be applied in future sessions. Changing the display language will switch all pages to the selected language.' 
+            %>
+          </p>
+        </div>
+        
+        <div class="mb-3">
+          <strong><%= currentLanguage === 'ja' ? 'テーマ設定について' : 'About Theme Settings' %></strong>
+          <p class="small text-muted mb-0">
+            <%= currentLanguage === 'ja' ? 
+              'テーマ設定は現在開発中の機能です。今後のアップデートで、ダークモードなどが追加される予定です。' : 
+              'Theme settings are a feature currently in development. Dark mode and other options will be added in future updates.' 
+            %>
+          </p>
+        </div>
+        
+        <div>
+          <strong><%= currentLanguage === 'ja' ? 'その他の設定' : 'Other Settings' %></strong>
+          <p class="small text-muted mb-0">
+            <%= currentLanguage === 'ja' ? 
+              'システム全体の設定は、環境変数を通じて管理されます。詳細は管理者向けドキュメントをご覧ください。' : 
+              'System-wide settings are managed through environment variables. Please see the administrator documentation for details.' 
+            %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

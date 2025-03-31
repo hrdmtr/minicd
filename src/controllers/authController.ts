@@ -5,6 +5,7 @@ import Project from '../models/Project';
  * Render login page
  */
 export const getLoginPage = (req: Request, res: Response): void => {
+  // @ts-ignore
   res.render('login', { 
     title: 'Login',
     error: null 
@@ -26,12 +27,14 @@ export const getHomePage = async (req: Request, res: Response): Promise<void> =>
   try {
     const projects = await Project.find().sort({ updatedAt: -1 });
     
+    // @ts-ignore
     res.render('home', { 
       title: 'Dashboard',
       projects 
     });
   } catch (error) {
     console.error('Error fetching projects:', error);
+    // @ts-ignore
     res.render('home', { 
       title: 'Dashboard',
       projects: [],

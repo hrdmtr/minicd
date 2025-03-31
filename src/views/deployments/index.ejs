@@ -1,0 +1,118 @@
+<div class="row mb-4">
+  <div class="col">
+    <h1>Deployments</h1>
+    <p class="lead">View all deployment history across projects</p>
+  </div>
+  <div class="col-auto">
+    <a href="/projects" class="btn btn-outline-secondary me-2">View Projects</a>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <% if (deployments && deployments.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Project</th>
+              <th>Date</th>
+              <th>Commit</th>
+              <th>Branch</th>
+              <th>Status</th>
+              <th>Triggered By</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% deployments.forEach(deployment => { %>
+              <tr>
+                <td>
+                  <a href="/projects/<%= deployment.project._id %>" class="text-decoration-none">
+                    <%= deployment.project.name %>
+                  </a>
+                </td>
+                <td><%= new Date(deployment.startedAt).toLocaleString() %></td>
+                <td>
+                  <% if (deployment.commitHash && deployment.commitHash !== 'pending') { %>
+                    <code><%= deployment.commitHash.substring(0, 7) %></code>
+                  <% } else { %>
+                    <span class="text-muted">Pending</span>
+                  <% } %>
+                </td>
+                <td><span class="badge bg-light text-dark"><%= deployment.branchName %></span></td>
+                <td>
+                  <% if (deployment.buildStatus === 'success') { %>
+                    <span class="badge bg-success">Success</span>
+                  <% } else if (deployment.buildStatus === 'failure') { %>
+                    <span class="badge bg-danger">Failed</span>
+                  <% } else { %>
+                    <span class="badge bg-warning text-dark">Pending</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (deployment.triggeredBy === 'push') { %>
+                    <span class="badge bg-info">Push</span>
+                  <% } else if (deployment.triggeredBy === 'pull_request') { %>
+                    <span class="badge bg-info">Pull Request</span>
+                  <% } else { %>
+                    <span class="badge bg-info">Manual</span>
+                  <% } %>
+                </td>
+                <td class="text-end">
+                  <a href="/deployments/<%= deployment._id %>" class="btn btn-sm btn-outline-secondary">View Logs</a>
+                  <% if (deployment.buildStatus === 'failure') { %>
+                    <a href="/deployments/trigger/<%= deployment.project._id %>" class="btn btn-sm btn-outline-primary ms-1">Retry</a>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      <% if (totalPages > 1) { %>
+        <div class="d-flex justify-content-center py-3">
+          <nav aria-label="Deployment pagination">
+            <ul class="pagination mb-0">
+              <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                <a class="page-link" href="/deployments?page=<%= currentPage - 1 %>" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                  <a class="page-link" href="/deployments?page=<%= i %>"><%= i %></a>
+                </li>
+              <% } %>
+              
+              <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                <a class="page-link" href="/deployments?page=<%= currentPage + 1 %>" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      <% } %>
+      
+    <% } else { %>
+      <div class="text-center py-5">
+        <div class="mb-3">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-rocket text-muted" viewBox="0 0 16 16">
+            <path d="M8 8c.828 0 1.5-.895 1.5-2S8.828 4 8 4s-1.5.895-1.5 2S7.172 8 8 8Z"/>
+            <path d="M11.953 8.81c-.195-3.388-.968-5.507-1.777-6.819C9.707 1.233 9.23.751 8.857.454a3.495 3.495 0 0 0-.463-.315A2.19 2.19 0 0 0 8.25.064c-.12.044-.272.13-.466.214l-.008.005C7.33.436 6.849.677 6.433 1.325c-.809 1.312-1.582 3.43-1.777 6.819-.053.94-.054 1.97-.006 3.027-1.026.135-1.784.417-2.205.839-.675.674-.675 1.603-.001 2.276 1.336 1.336 7.391 1.336 8.728 0 .674-.674.674-1.602 0-2.276-.427-.427-1.18-.704-2.205-.839.048-1.058.047-2.087-.006-3.027ZM8 9c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2Z"/>
+            <path d="M12.5 2.4c-.3-.866-.6-1.6-1-2a3.5 3.5 0 0 0-.5 2 3.5 3.5 0 0 0 1.5 0Z"/>
+          </svg>
+        </div>
+        <h5 class="mb-3">No deployments found</h5>
+        <p class="text-muted mb-4">Create a project and deploy it to see deployment history</p>
+        <a href="/projects/new" class="btn btn-primary px-4">
+          Create New Project
+        </a>
+      </div>
+    <% } %>
+  </div>
+</div>

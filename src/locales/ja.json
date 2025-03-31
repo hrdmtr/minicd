@@ -1,0 +1,214 @@
+{
+  "app": {
+    "name": "MiniCD",
+    "tagline": "小規模チームやプロジェクト向けの軽量な継続的デプロイメントプラットフォーム"
+  },
+  "common": {
+    "actions": "アクション",
+    "add": "追加",
+    "back": "戻る",
+    "cancel": "キャンセル",
+    "create": "作成",
+    "delete": "削除",
+    "deploy": "デプロイ",
+    "deployNow": "今すぐデプロイ",
+    "details": "詳細",
+    "edit": "編集",
+    "error": "エラー",
+    "name": "名前",
+    "port": "ポート",
+    "save": "保存",
+    "settings": "設定",
+    "status": "状態",
+    "submit": "送信",
+    "update": "更新"
+  },
+  "navigation": {
+    "dashboard": "ダッシュボード",
+    "deployments": "デプロイメント",
+    "documentation": "ドキュメント",
+    "home": "ホーム",
+    "login": "ログイン",
+    "logout": "ログアウト",
+    "projects": "プロジェクト",
+    "settings": "設定"
+  },
+  "login": {
+    "title": "MiniCDにログイン",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "loginButton": "ログイン",
+    "demoNotice": "これはデモ用ログインページです。どんな認証情報でもログインできます。"
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "welcome": "MiniCDへようこそ - 軽量な継続的デプロイメントツール",
+    "newProject": "新規プロジェクト",
+    "yourProjects": "あなたのプロジェクト",
+    "noProjects": "まだプロジェクトがありません。",
+    "createFirstProject": "最初のプロジェクトを作成"
+  },
+  "projects": {
+    "title": "プロジェクト",
+    "subtitle": "デプロイメントプロジェクトを管理",
+    "newProject": "新規プロジェクト",
+    "createNewProject": "新規プロジェクト作成",
+    "createProjectSubtitle": "継続的デプロイメント用のプロジェクトを設定",
+    "noProjects": "プロジェクトが見つかりません",
+    "createFirstProjectHelp": "MiniCDを始めるには最初のプロジェクトを作成してください",
+    "projectDetails": "プロジェクト詳細",
+    "editProject": "プロジェクトを編集",
+    "deleteProject": "プロジェクトを削除",
+    "confirmDelete": "このプロジェクトを削除してもよろしいですか？",
+    "deleteWarning": "この操作は取り消せません。すべてのデプロイメント履歴も完全に削除されます。",
+    "fields": {
+      "name": "プロジェクト名",
+      "nameHelp": "プロジェクト固有の名前",
+      "repositoryUrl": "GitHubリポジトリURL",
+      "repositoryUrlHelp": "Gitリポジトリへのリンク",
+      "branch": "ブランチ",
+      "branchHelp": "デプロイメントをトリガーするブランチ",
+      "port": "コンテナポート",
+      "portHelp": "アプリケーションがコンテナ内でリッスンするポート",
+      "active": "アクティブ",
+      "activeHelp": "非アクティブなプロジェクトは自動的にデプロイされません",
+      "autoDeployment": "自動デプロイメントを有効化",
+      "autoDeploymentHelp": "有効にすると、指定されたブランチへのプッシュが自動デプロイをトリガーします"
+    },
+    "tips": {
+      "title": "ヒント",
+      "dockerfile": "リポジトリのルートレベルにDockerfileが必要です。",
+      "portExpose": "ここで指定したのと同じポートでアプリを公開することをお勧めします。",
+      "webhook": "プロジェクト作成後、自動デプロイメントを有効にするにはGitHubウェブフックを設定する必要があります。"
+    },
+    "notes": {
+      "title": "注意事項",
+      "repoChange": "リポジトリURLやブランチを変更すると、今後のデプロイメントに影響します。",
+      "portChange": "ポートを変更する場合は、アプリケーションがコンテナ内でこのポートをリッスンするように設定されていることを確認してください。",
+      "inactiveHelp": "プロジェクトを非アクティブに設定すると、自動デプロイメントは停止しますが、手動でデプロイすることは可能です。"
+    }
+  },
+  "deployments": {
+    "title": "デプロイメント",
+    "subtitle": "すべてのプロジェクトのデプロイメント履歴を表示",
+    "viewProjects": "プロジェクトを表示",
+    "noDeployments": "デプロイメントが見つかりません",
+    "noDeploymentsHelp": "デプロイメント履歴を表示するには、プロジェクトを作成してデプロイしてください",
+    "deploymentDetails": "デプロイメント詳細",
+    "deploymentHistory": "デプロイメント履歴",
+    "logs": "デプロイメントログ",
+    "retryDeployment": "デプロイメントを再試行",
+    "buildStatus": {
+      "success": "成功",
+      "failure": "失敗",
+      "pending": "進行中",
+      "none": "なし"
+    },
+    "trigger": {
+      "push": "プッシュ",
+      "pull_request": "プルリクエスト",
+      "manual": "手動"
+    },
+    "fields": {
+      "date": "日付",
+      "project": "プロジェクト",
+      "commit": "コミット",
+      "branch": "ブランチ",
+      "status": "状態",
+      "triggeredBy": "トリガー",
+      "started": "開始",
+      "finished": "終了",
+      "duration": "所要時間",
+      "inProgress": "進行中"
+    }
+  },
+  "containers": {
+    "title": "コンテナ情報",
+    "containerId": "コンテナID",
+    "status": "状態",
+    "running": "実行中",
+    "stopped": "停止",
+    "restart": "コンテナを再起動",
+    "stop": "コンテナを停止"
+  },
+  "webhooks": {
+    "title": "GitHubウェブフック設定",
+    "instructions": "自動デプロイメントを有効にするには、GitHubリポジトリにウェブフックを追加してください：",
+    "steps": {
+      "1": "GitHubリポジトリの設定に移動します（Settings > Webhooks > Add webhook）",
+      "2": "Payload URLを次のように設定します：",
+      "3": "Content Typeを application/json に設定します",
+      "4": "Secretを環境変数 GITHUB_WEBHOOK_SECRET の値に設定します",
+      "5": "「プッシュイベントのみ」を選択するか、個別のイベント（プッシュとプルリクエスト）を選択します",
+      "6": "「Add webhook」をクリックします"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "subtitle": "MiniCDの設定を構成する",
+    "language": {
+      "title": "言語",
+      "subtitle": "優先する言語を選択",
+      "en": "English (英語)",
+      "ja": "日本語"
+    },
+    "theme": {
+      "title": "テーマ",
+      "subtitle": "優先するカラーテーマを選択",
+      "light": "ライト",
+      "dark": "ダーク"
+    },
+    "save": "設定を保存",
+    "resetToDefaults": "デフォルトにリセット",
+    "settingsSaved": "設定が正常に保存されました"
+  },
+  "landing": {
+    "features": {
+      "title": "シンプルな継続的デプロイメント",
+      "subtitle": "最小限の設定でアプリケーションをデプロイ",
+      "fastDeployment": {
+        "title": "高速デプロイメント",
+        "description": "自動ビルドとデプロイメントプロセスにより、数分でコードをデプロイできます。"
+      },
+      "githubIntegration": {
+        "title": "GitHub連携",
+        "description": "GitHubウェブフックとシームレスに連携し、プッシュやプルリクエスト時に自動デプロイが可能です。"
+      },
+      "dockerContainers": {
+        "title": "Dockerコンテナ",
+        "description": "一貫性とセキュリティを確保するため、アプリケーションを分離されたDockerコンテナにデプロイします。"
+      }
+    },
+    "howItWorks": {
+      "title": "MiniCDの仕組み",
+      "subtitle": "アプリケーションをデプロイするための簡単なステップ",
+      "step1": {
+        "title": "リポジトリの接続",
+        "description": "GitHubリポジトリをMiniCDにリンク"
+      },
+      "step2": {
+        "title": "設定の構成",
+        "description": "ブランチ、ポート、デプロイメントオプションを指定"
+      },
+      "step3": {
+        "title": "ウェブフックのセットアップ",
+        "description": "リポジトリにMiniCDウェブフックを追加"
+      },
+      "step4": {
+        "title": "自動デプロイメント",
+        "description": "プッシュ時にコードが自動的にデプロイ"
+      }
+    },
+    "cta": {
+      "title": "デプロイメントプロセスを簡素化する準備はできていますか？",
+      "subtitle": "MiniCDはあらゆる規模のチームが利用できる継続的デプロイメントを実現します。",
+      "button": "今すぐ始める"
+    }
+  },
+  "error": {
+    "title": "エラー",
+    "notFound": "見つかりません",
+    "notFoundMessage": "お探しのページは存在しません。",
+    "backHome": "ホームに戻る"
+  }
+}

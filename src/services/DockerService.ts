@@ -53,7 +53,7 @@ export class DockerService {
    */
   static async run(
     project: IProject,
-  ): Promise<{ success: boolean; containerId: string | null; log: string }> {
+  ): Promise<{ success: boolean; containerId: string | null; exposedPort?: number; log: string }> {
     return new Promise((resolve) => {
       let log = '';
       const imageName = `minicd_${project.name}`.toLowerCase().replace(/[^a-z0-9_]/g, '_');
@@ -63,15 +63,50 @@ export class DockerService {
         this.stop(project.containerId).catch(console.error);
       }
       
-      // Run new container, publish the configured port
-      const run = spawn('docker', [
+      // Prepare docker run arguments
+      const dockerArgs = [
         'run',
         '-d',
-        '--restart=unless-stopped',
-        '-p', `${project.port}:${project.port}`,
-        '--name', `minicd_${project.name}_${Date.now()}`.toLowerCase().replace(/[^a-z0-9_]/g, '_'),
-        imageName,
-      ]);
+        '--restart=unless-stopped'
+      ];
+      
+      // Handle port mapping
+      // If exposedPort is configured, use specific port mapping
+      // If exposedPort is 0, use Docker's automatic port assignment
+      // Otherwise use same port for container and host
+      if (project.exposedPort && project.exposedPort > 0) {
+        // Use specific port mapping
+        dockerArgs.push('-p', `${project.exposedPort}:${project.port}`);
+        log += `Setting up port mapping: ${project.exposedPort}:${project.port}\n`;
+      } else if (project.exposedPort === 0) {
+        // Use automatic port assignment (Docker will choose a free port)
+        dockerArgs.push('-p', `${project.port}`);
+        log += `Setting up automatic port mapping for container port ${project.port}\n`;
+      } else {
+        // Use same port for container and host
+        dockerArgs.push('-p', `${project.port}:${project.port}`);
+        log += `Setting up port mapping: ${project.port}:${project.port}\n`;
+      }
+      
+      // Add container name
+      const containerName = `minicd_${project.name}_${Date.now()}`.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+      dockerArgs.push('--name', containerName);
+      
+      // Add environment variables if available
+      if (project.environmentVariables && project.environmentVariables.length > 0) {
+        log += `Setting up environment variables...\n`;
+        project.environmentVariables.forEach(variable => {
+          dockerArgs.push('-e', `${variable.key}=${variable.value}`);
+        });
+      }
+      
+      // Add image name
+      dockerArgs.push(imageName);
+      
+      log += `Starting container with name: ${containerName}\n`;
+      
+      // Run the container
+      const run = spawn('docker', dockerArgs);
 
       run.stdout.on('data', (data) => {
         const output = data.toString().trim();
@@ -85,17 +120,49 @@ export class DockerService {
         console.error(output);
       });
 
-      run.on('close', (code) => {
+      run.on('close', async (code) => {
         const success = code === 0;
         let containerId = null;
+        let exposedPort = project.exposedPort;
         
         if (success && log.trim()) {
           containerId = log.trim();
+          
+          // If automatic port assignment was used, retrieve the assigned port
+          if (project.exposedPort === 0 && containerId) {
+            try {
+              // Use docker port command to get the assigned port
+              const portProcess = spawn('docker', ['port', containerId, `${project.port}/tcp`]);
+              let portOutput = '';
+              
+              portProcess.stdout.on('data', (data) => {
+                portOutput += data.toString();
+              });
+              
+              // Wait for port command to complete
+              await new Promise<void>((portResolve) => {
+                portProcess.on('close', (portCode) => {
+                  if (portCode === 0 && portOutput.trim()) {
+                    // Extract port from output format like "0.0.0.0:32768"
+                    const portMatch = portOutput.trim().match(/:(\d+)$/);
+                    if (portMatch && portMatch[1]) {
+                      exposedPort = parseInt(portMatch[1], 10);
+                      log += `\\nDocker assigned port ${exposedPort} for container port ${project.port}\\n`;
+                    }
+                  }
+                  portResolve();
+                });
+              });
+            } catch (error) {
+              log += `\\nFailed to retrieve assigned port: ${error}\\n`;
+            }
+          }
         }
         
         resolve({
           success,
           containerId,
+          exposedPort,
           log: log + `\\nDocker run exited with code ${code}`,
         });
       });
