@@ -46,5 +46,8 @@ export default (req: Request, res: Response, next: NextFunction): void => {
   res.locals.__ = (key: string) => translate(lang, key);
   res.locals.language = lang; // 現在の言語をテンプレートに渡す
   
+  // デバッグログを追加（言語設定を確認）
+  console.log(`[i18n] Current language: ${lang}`);
+  
   next();
 };

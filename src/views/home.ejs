@@ -3,11 +3,11 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8 mx-auto">
-        <h1 class="display-4 fw-bold">MiniCD</h1>
-        <p class="lead mb-4">A lightweight continuous deployment platform designed for small teams and projects</p>
+        <h1 class="display-4 fw-bold"><%= locals.__ ? __('app.name') : 'MiniCD' %></h1>
+        <p class="lead mb-4"><%= locals.__ ? __('app.tagline') : 'A lightweight continuous deployment platform designed for small teams and projects' %></p>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <a href="/projects/new" class="btn btn-light btn-lg px-4 gap-3">Get Started Now</a>
-          <a href="#features" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+          <a href="/projects/new" class="btn btn-light btn-lg px-4 gap-3"><%= locals.__ ? __('landing.cta.button') : 'Get Started Now' %></a>
+          <a href="#features" class="btn btn-outline-light btn-lg px-4"><%= locals.__ ? 'もっと詳しく' : 'Learn More' %></a>
         </div>
       </div>
     </div>
