@@ -65,7 +65,7 @@ export const getDeploymentLogs = async (
   try {
     const { id } = req.params;
     
-    const deployment = await Deployment.findById(id).select('buildLog');
+    const deployment = await Deployment.findById(id).select('buildLog buildStatus');
     
     if (!deployment) {
       throw new AppError('Deployment not found', 404);
@@ -73,9 +73,8 @@ export const getDeploymentLogs = async (
     
     res.status(200).json({
       success: true,
-      data: {
-        logs: deployment.buildLog,
-      },
+      buildLog: deployment.buildLog,
+      buildStatus: deployment.buildStatus
     });
   } catch (error) {
     next(error);

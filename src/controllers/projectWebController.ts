@@ -45,7 +45,10 @@ export const createProjectWeb = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { name, repositoryUrl, branch, port, isActive } = req.body;
+    const { 
+      name, repositoryUrl, branch, port, exposedPort, isActive,
+      envKeys, envValues, envSecrets 
+    } = req.body;
     
     // Validate required fields
     if (!name || !repositoryUrl || !port) {
@@ -55,13 +58,36 @@ export const createProjectWeb = async (
       });
     }
     
+    // Process environment variables
+    const environmentVariables = [];
+    if (envKeys && envValues) {
+      // Convert to arrays if single values
+      const keys = Array.isArray(envKeys) ? envKeys : [envKeys];
+      const values = Array.isArray(envValues) ? envValues : [envValues];
+      const secrets = envSecrets ? (Array.isArray(envSecrets) ? envSecrets : [envSecrets]) : [];
+      
+      // Create environment variables array
+      for (let i = 0; i < keys.length; i++) {
+        // Skip empty key/value pairs
+        if (!keys[i] || keys[i].trim() === '') continue;
+        
+        environmentVariables.push({
+          key: keys[i],
+          value: values[i] || '',
+          isSecret: secrets.includes(i.toString())
+        });
+      }
+    }
+    
     // Create project
     const project = await Project.create({
       name,
       repositoryUrl,
       branch: branch || 'main',
       port: parseInt(port, 10),
-      isActive: isActive === 'true'
+      exposedPort: exposedPort ? parseInt(exposedPort, 10) : undefined,
+      isActive: isActive === 'true',
+      environmentVariables
     });
     
     res.redirect(`/projects/${project._id}`);
@@ -146,7 +172,10 @@ export const updateProjectWeb = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { name, repositoryUrl, branch, port, isActive } = req.body;
+    const { 
+      name, repositoryUrl, branch, port, exposedPort, isActive, 
+      envKeys, envValues, envSecrets 
+    } = req.body;
     
     // Find project
     const project = await Project.findById(req.params.id);
@@ -163,7 +192,39 @@ export const updateProjectWeb = async (
     if (repositoryUrl !== undefined) project.repositoryUrl = repositoryUrl;
     if (branch !== undefined) project.branch = branch;
     if (port !== undefined) project.port = parseInt(port, 10);
+    if (exposedPort) {
+      project.exposedPort = parseInt(exposedPort, 10);
+    } else {
+      // If exposedPort is empty string or not provided, remove it
+      project.exposedPort = undefined;
+    }
     project.isActive = isActive === 'true';
+    
+    // Process environment variables
+    if (envKeys && envValues) {
+      const environmentVariables = [];
+      
+      // Convert to arrays if single values
+      const keys = Array.isArray(envKeys) ? envKeys : [envKeys];
+      const values = Array.isArray(envValues) ? envValues : [envValues];
+      const secrets = envSecrets ? (Array.isArray(envSecrets) ? envSecrets : [envSecrets]) : [];
+      
+      // Create environment variables array
+      for (let i = 0; i < keys.length; i++) {
+        // Skip empty key/value pairs
+        if (!keys[i] || keys[i].trim() === '') continue;
+        
+        environmentVariables.push({
+          key: keys[i],
+          value: values[i] || '',
+          isSecret: secrets.includes(i.toString())
+        });
+      }
+      
+      project.environmentVariables = environmentVariables;
+    } else {
+      project.environmentVariables = [];
+    }
     
     await project.save();
     

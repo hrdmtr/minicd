@@ -1,7 +1,7 @@
 <div class="row mb-4">
   <div class="col">
-    <h1>Edit Project</h1>
-    <p class="lead">Update settings for <%= project.name %></p>
+    <h1><%= locals.__ ? __('projects.editProject') : 'Edit Project' %></h1>
+    <p class="lead"><%= locals.__ ? __('projects.editProjectSubtitle') : 'Update settings for' %> <%= project.name %></p>
   </div>
 </div>
 
@@ -17,47 +17,135 @@
         
         <form action="/projects/<%= project._id %>/update" method="POST">
           <div class="mb-3">
-            <label for="name" class="form-label">Project Name</label>
+            <label for="name" class="form-label"><%= locals.__ ? __('projects.fields.name') : 'Project Name' %></label>
             <input type="text" class="form-control" id="name" name="name" required
                    value="<%= project.name %>" placeholder="e.g., my-web-app">
-            <div class="form-text">A unique name for your project</div>
+            <div class="form-text"><%= locals.__ ? __('projects.fields.nameHelp') : 'A unique name for your project' %></div>
           </div>
           
           <div class="mb-3">
-            <label for="repositoryUrl" class="form-label">GitHub Repository URL</label>
+            <label for="repositoryUrl" class="form-label"><%= locals.__ ? __('projects.fields.repositoryUrl') : 'GitHub Repository URL' %></label>
             <input type="url" class="form-control" id="repositoryUrl" name="repositoryUrl" required
                    value="<%= project.repositoryUrl %>" placeholder="e.g., https://github.com/username/repo.git">
-            <div class="form-text">The URL to your Git repository</div>
+            <div class="form-text"><%= locals.__ ? __('projects.fields.repositoryUrlHelp') : 'The URL to your Git repository' %></div>
           </div>
           
           <div class="mb-3">
-            <label for="branch" class="form-label">Branch</label>
+            <label for="branch" class="form-label"><%= locals.__ ? __('projects.fields.branch') : 'Branch' %></label>
             <input type="text" class="form-control" id="branch" name="branch"
                    value="<%= project.branch %>" placeholder="e.g., main, master, production">
-            <div class="form-text">The branch that will trigger deployments</div>
+            <div class="form-text"><%= locals.__ ? __('projects.fields.branchHelp') : 'The branch that will trigger deployments' %></div>
           </div>
           
-          <div class="mb-3">
-            <label for="port" class="form-label">Container Port</label>
-            <input type="number" class="form-control" id="port" name="port" required
-                   min="1" max="65535" value="<%= project.port %>">
-            <div class="form-text">The port your application listens on inside the container</div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="port" class="form-label"><%= locals.__ ? __('projects.fields.port') : 'Container Port' %></label>
+              <input type="number" class="form-control" id="port" name="port" required
+                     min="1" max="65535" value="<%= project.port %>">
+              <div class="form-text"><%= locals.__ ? __('projects.fields.portHelp') : 'The port your application listens on inside the container' %></div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="exposedPort" class="form-label"><%= locals.__ ? __('projects.fields.exposedPort') : 'Exposed Port (Optional)' %></label>
+              <input type="number" class="form-control" id="exposedPort" name="exposedPort"
+                     min="1" max="65535" value="<%= project.exposedPort || '' %>">
+              <div class="form-text"><%= locals.__ ? __('projects.fields.exposedPortHelp') : 'The port to expose on the host (leave empty for auto-assignment)' %></div>
+            </div>
           </div>
           
           <hr class="my-4">
           
-          <h5 class="mb-3">Advanced Settings</h5>
+          <h5 class="mb-3"><%= locals.__ ? __('projects.environmentVariables.title') : 'Environment Variables' %></h5>
+          <p class="text-muted mb-3"><%= locals.__ ? __('projects.environmentVariables.description') : 'Configure environment variables for your application' %></p>
+          
+          <div id="envVarsContainer">
+            <% if (project.environmentVariables && project.environmentVariables.length > 0) { %>
+              <% project.environmentVariables.forEach((env, index) => { %>
+                <div class="row env-var-row mb-2">
+                  <div class="col-md-5">
+                    <input type="text" class="form-control" name="envKeys[]" placeholder="KEY" value="<%= env.key %>">
+                  </div>
+                  <div class="col-md-5">
+                    <input type="text" class="form-control" name="envValues[]" placeholder="Value" value="<%= env.value %>">
+                  </div>
+                  <div class="col-md-1">
+                    <div class="form-check mt-2">
+                      <input class="form-check-input" type="checkbox" name="envSecrets[]" value="<%= index %>" <%= env.isSecret ? 'checked' : '' %>>
+                      <label class="form-check-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
+                          <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486z"/>
+                          <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>
+                          <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708"/>
+                        </svg>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-env-var">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <!-- Default empty row if no env vars exist -->
+              <div class="row env-var-row mb-2">
+                <div class="col-md-5">
+                  <input type="text" class="form-control" name="envKeys[]" placeholder="KEY">
+                </div>
+                <div class="col-md-5">
+                  <input type="text" class="form-control" name="envValues[]" placeholder="Value">
+                </div>
+                <div class="col-md-1">
+                  <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" name="envSecrets[]" value="0">
+                    <label class="form-check-label">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
+                        <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486z"/>
+                        <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>
+                        <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708"/>
+                      </svg>
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <button type="button" class="btn btn-sm btn-outline-danger remove-env-var">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                      <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            <% } %>
+          </div>
+          
+          <div class="mb-4 mt-2">
+            <button type="button" id="addEnvVar" class="btn btn-sm btn-outline-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+              </svg>
+              <%= locals.__ ? __('projects.environmentVariables.addButton') : 'Add Environment Variable' %>
+            </button>
+          </div>
+          
+          <hr class="my-4">
+          
+          <h5 class="mb-3"><%= locals.__ ? __('projects.advanced.title') : 'Advanced Settings' %></h5>
           
           <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="isActive" name="isActive" value="true"
                   <%= project.isActive ? 'checked' : '' %>>
-            <label class="form-check-label" for="isActive">Active</label>
-            <div class="form-text">Inactive projects won't be deployed automatically</div>
+            <label class="form-check-label" for="isActive"><%= locals.__ ? __('projects.fields.active') : 'Active' %></label>
+            <div class="form-text"><%= locals.__ ? __('projects.fields.activeHelp') : 'Inactive projects won\'t be deployed automatically' %></div>
           </div>
           
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <a href="/projects/<%= project._id %>" class="btn btn-outline-secondary me-md-2">Cancel</a>
-            <button type="submit" class="btn btn-primary">Update Project</button>
+            <a href="/projects/<%= project._id %>" class="btn btn-outline-secondary me-md-2"><%= locals.__ ? __('common.cancel') : 'Cancel' %></a>
+            <button type="submit" class="btn btn-primary"><%= locals.__ ? __('common.update') : 'Update Project' %></button>
           </div>
         </form>
       </div>
@@ -67,17 +155,100 @@
   <div class="col-md-4">
     <div class="card shadow-sm bg-light">
       <div class="card-body">
-        <h5 class="card-title">Notes</h5>
+        <h5 class="card-title"><%= locals.__ ? __('projects.notes.title') : 'Notes' %></h5>
         <ul class="mb-0">
-          <li class="mb-2">Changing the repository URL or branch will affect future deployments.</li>
-          <li class="mb-2">If you change the port, make sure your application is configured to listen on this port inside the container.</li>
-          <li class="mb-2">Setting a project to inactive will prevent automatic deployments but you can still deploy manually.</li>
+          <li class="mb-2"><%= locals.__ ? __('projects.notes.repoChange') : 'Changing the repository URL or branch will affect future deployments.' %></li>
+          <li class="mb-2"><%= locals.__ ? __('projects.notes.portChange') : 'If you change the port, make sure your application is configured to listen on this port inside the container.' %></li>
+          <li class="mb-2"><%= locals.__ ? __('projects.notes.inactiveHelp') : 'Setting a project to inactive will prevent automatic deployments but you can still deploy manually.' %></li>
+          <li class="mb-2"><%= locals.__ ? __('projects.environmentVariables.help') : 'Environment variables will be available inside your container. Secret variables will be masked in logs.' %></li>
         </ul>
       </div>
     </div>
     
     <div class="mt-4">
-      <a href="/projects/<%= project._id %>" class="btn btn-outline-primary w-100">Back to Project</a>
+      <a href="/projects/<%= project._id %>" class="btn btn-outline-primary w-100"><%= locals.__ ? __('common.back') : 'Back to Project' %></a>
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const envVarsContainer = document.getElementById('envVarsContainer');
+    const addEnvVarButton = document.getElementById('addEnvVar');
+    
+    // Add env var row
+    addEnvVarButton.addEventListener('click', function() {
+      const rows = document.querySelectorAll('.env-var-row');
+      const newIndex = rows.length;
+      
+      const newRow = document.createElement('div');
+      newRow.className = 'row env-var-row mb-2';
+      newRow.innerHTML = `
+        <div class="col-md-5">
+          <input type="text" class="form-control" name="envKeys[]" placeholder="KEY">
+        </div>
+        <div class="col-md-5">
+          <input type="text" class="form-control" name="envValues[]" placeholder="Value">
+        </div>
+        <div class="col-md-1">
+          <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" name="envSecrets[]" value="${newIndex}">
+            <label class="form-check-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
+                <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486z"/>
+                <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>
+                <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708"/>
+              </svg>
+            </label>
+          </div>
+        </div>
+        <div class="col-md-1">
+          <button type="button" class="btn btn-sm btn-outline-danger remove-env-var">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+              <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+            </svg>
+          </button>
+        </div>
+      `;
+      
+      envVarsContainer.appendChild(newRow);
+      setupRemoveButtons();
+    });
+    
+    // Setup remove buttons
+    function setupRemoveButtons() {
+      document.querySelectorAll('.remove-env-var').forEach(button => {
+        button.addEventListener('click', function() {
+          const row = this.closest('.env-var-row');
+          if (document.querySelectorAll('.env-var-row').length > 1) {
+            row.remove();
+            updateSecretIndices();
+          } else {
+            // Clear values instead of removing the last row
+            const inputs = row.querySelectorAll('input');
+            inputs.forEach(input => {
+              if (input.type === 'text') {
+                input.value = '';
+              } else if (input.type === 'checkbox') {
+                input.checked = false;
+              }
+            });
+          }
+        });
+      });
+    }
+    
+    // Update indices for secret checkboxes when rows are removed
+    function updateSecretIndices() {
+      const rows = document.querySelectorAll('.env-var-row');
+      rows.forEach((row, index) => {
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        checkbox.value = index;
+      });
+    }
+    
+    // Initialize remove buttons
+    setupRemoveButtons();
+  });
+</script>

@@ -10,6 +10,9 @@ export interface IDeployment extends Document {
   finishedAt?: Date;
   triggeredBy: 'push' | 'pull_request' | 'manual';
   branchName: string;
+  containerId?: string;
+  exposedPort?: number;
+  containerUrl?: string;
 }
 
 const DeploymentSchema: Schema = new Schema(
@@ -30,6 +33,9 @@ const DeploymentSchema: Schema = new Schema(
       required: true,
     },
     branchName: { type: String, required: true },
+    containerId: { type: String },
+    exposedPort: { type: Number },
+    containerUrl: { type: String },
   },
   { timestamps: true }
 );
