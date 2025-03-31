@@ -8,6 +8,8 @@ import authRoutes from './routes/authRoutes';
 import projectRoutes from './routes/projectRoutes';
 import deploymentRoutes from './routes/deploymentRoutes';
 import webhookRoutes from './routes/webhookRoutes';
+import projectWebRoutes from './routes/projectWebRoutes';
+import deploymentWebRoutes from './routes/deploymentWebRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +39,8 @@ app.use((req, res, next) => {
 
 // Web routes
 app.use('/', authRoutes);
+app.use('/projects', projectWebRoutes);
+app.use('/deployments', deploymentWebRoutes);
 
 // API routes
 app.use('/api/projects', projectRoutes);
