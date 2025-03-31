@@ -1,127 +1,127 @@
 # MiniCD
 
-A lightweight continuous deployment service for Docker applications, similar to Render.com. MiniCD monitors GitHub repositories and automatically builds and deploys Docker containers when changes are detected.
+Docker アプリケーション向けの軽量な継続的デプロイメントサービスで、Render.com に似た機能を提供します。MiniCD は GitHub リポジトリを監視し、変更が検出されると自動的に Docker イメージをビルドしてコンテナをデプロイします。
 
-## Features
+## 特徴
 
-- Monitors GitHub repositories for push events and pull requests
-- Automatically builds Docker images from Dockerfiles
-- Deploys containers with configurable port mappings
-- Tracks deployment history and logs
-- RESTful API for managing projects and deployments
+- GitHub リポジトリのプッシュイベントとプルリクエストを監視
+- Dockerfile から Docker イメージを自動的にビルド
+- 設定可能なポートマッピングでコンテナをデプロイ
+- デプロイ履歴とログを追跡
+- プロジェクトとデプロイメントを管理するための RESTful API
 
-## Requirements
+## 必要条件
 
-- Node.js 16+ and npm
+- Node.js 16+ と npm
 - MongoDB
-- Docker (on the host system)
+- Docker（ホストシステム上）
 - Git
 
-## Getting Started
+## 開始方法
 
 詳細なセットアップ手順については、[SETUP_GUIDE.md](./SETUP_GUIDE.md)を参照してください。
 
-### Using Docker Compose (Recommended)
+### Docker Compose の使用（推奨）
 
-The easiest way to get started is using Docker Compose:
+最も簡単な始め方は Docker Compose を使用することです：
 
-1. Clone the repository:
+1. リポジトリをクローンする：
    ```
    git clone https://github.com/yourusername/minicd.git
    cd minicd
    ```
 
-2. Run the setup script:
+2. セットアップスクリプトを実行する：
    ```
    ./setup.sh
    ```
    
-   This will:
-   - Create necessary directories
-   - Copy `.env.example` to `.env` if it doesn't exist
-   - Start the application and MongoDB using Docker Compose
+   これにより以下が実行されます：
+   - 必要なディレクトリの作成
+   - `.env.example` を `.env` にコピー（存在しない場合）
+   - Docker Compose を使用してアプリケーションと MongoDB を起動
 
-3. The application will be available at http://localhost:3000
+3. アプリケーションは http://localhost:3000 で利用可能になります
 
-4. To stop the application:
+4. アプリケーションを停止するには：
    ```
    docker-compose down
    ```
 
-### Manual Setup
+### 手動セットアップ
 
-If you prefer to run the application without Docker:
+Docker を使わずにアプリケーションを実行する場合：
 
-1. Clone the repository:
+1. リポジトリをクローンする：
    ```
    git clone https://github.com/yourusername/minicd.git
    cd minicd
    ```
 
-2. Install dependencies:
+2. 依存関係をインストールする：
    ```
    npm install
    ```
 
-3. Create a `.env` file based on the example:
+3. サンプルに基づいて `.env` ファイルを作成する：
    ```
    cp .env.example .env
    ```
-   Update the values for your environment.
+   環境に合わせて値を更新してください。
 
-4. Make sure MongoDB is running.
+4. MongoDB が実行されていることを確認する。
 
-5. Build the application:
+5. アプリケーションをビルドする：
    ```
    npm run build
    ```
 
-6. Start the server:
+6. サーバーを起動する：
    ```
    npm start
    ```
    
-   Or for development:
+   または開発用に：
    ```
    npm run dev
    ```
 
-## API Endpoints
+## API エンドポイント
 
-### Projects
+### プロジェクト
 
-- `GET /api/projects` - List all projects
-- `POST /api/projects` - Create a new project
-- `GET /api/projects/:id` - Get project details
-- `PUT /api/projects/:id` - Update a project
-- `DELETE /api/projects/:id` - Delete a project
-- `POST /api/projects/:id/deploy` - Trigger a manual deployment
+- `GET /api/projects` - すべてのプロジェクトを一覧表示
+- `POST /api/projects` - 新しいプロジェクトを作成
+- `GET /api/projects/:id` - プロジェクトの詳細を取得
+- `PUT /api/projects/:id` - プロジェクトを更新
+- `DELETE /api/projects/:id` - プロジェクトを削除
+- `POST /api/projects/:id/deploy` - 手動デプロイメントをトリガー
 
-### Deployments
+### デプロイメント
 
-- `GET /api/deployments/project/:projectId` - List deployments for a project
-- `GET /api/deployments/:id` - Get deployment details
-- `GET /api/deployments/:id/logs` - Get deployment logs
+- `GET /api/deployments/project/:projectId` - プロジェクトのデプロイメント一覧を取得
+- `GET /api/deployments/:id` - デプロイメントの詳細を取得
+- `GET /api/deployments/:id/logs` - デプロイメントログを取得
 
-### Webhooks
+### Webhook
 
-- `POST /api/webhooks/github` - GitHub webhook endpoint
+- `POST /api/webhooks/github` - GitHub webhook エンドポイント
 
-## Setting Up GitHub Webhooks
+## GitHub Webhook の設定
 
-1. In your GitHub repository, go to Settings > Webhooks > Add webhook
-2. Set the Payload URL to `https://your-minicd-server.com/api/webhooks/github`
-3. Set Content type to `application/json`
-4. Set Secret to the same value as your `GITHUB_WEBHOOK_SECRET` environment variable
-5. Select events: Push events and Pull request events
+1. GitHub リポジトリで Settings > Webhooks > Add webhook に移動
+2. ペイロード URL を `https://your-minicd-server.com/api/webhooks/github` に設定
+3. コンテンツタイプを `application/json` に設定
+4. シークレットを `GITHUB_WEBHOOK_SECRET` 環境変数と同じ値に設定
+5. イベントを選択：プッシュイベントとプルリクエストイベント
 
-## Environment Variables
+## 環境変数
 
-- `PORT` - Server port (default: 3000)
-- `MONGODB_URI` - MongoDB connection string
-- `GITHUB_WEBHOOK_SECRET` - Secret for verifying GitHub webhooks
-- `STORAGE_PATH` - Path for storing cloned repositories
+- `PORT` - サーバーポート（デフォルト：3000）
+- `MONGODB_URI` - MongoDB 接続文字列
+- `GITHUB_WEBHOOK_SECRET` - GitHub webhook を検証するためのシークレット
+- `STORAGE_PATH` - クローンされたリポジトリを保存するパス
 
-## License
+## ライセンス
 
 MIT
