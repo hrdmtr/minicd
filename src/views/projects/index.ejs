@@ -1,0 +1,160 @@
+<div class="row mb-4">
+  <div class="col">
+    <h1>Projects</h1>
+    <p class="lead">Manage your deployment projects</p>
+  </div>
+  <div class="col-auto">
+    <a href="/projects/new" class="btn btn-primary">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg me-1" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+      </svg>
+      New Project
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+        <% if (projects && projects.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Name</th>
+                  <th>Repository</th>
+                  <th>Branch</th>
+                  <th>Status</th>
+                  <th>Last Deployment</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% projects.forEach(project => { %>
+                  <tr>
+                    <td>
+                      <a href="/projects/<%= project._id %>" class="text-decoration-none fw-bold">
+                        <%= project.name %>
+                      </a>
+                    </td>
+                    <td>
+                      <small class="text-muted"><%= project.repositoryUrl.replace('https://github.com/', '') %></small>
+                    </td>
+                    <td><span class="badge bg-light text-dark"><%= project.branch %></span></td>
+                    <td>
+                      <% if (project.lastBuildStatus === 'success') { %>
+                        <span class="badge bg-success">Success</span>
+                      <% } else if (project.lastBuildStatus === 'failure') { %>
+                        <span class="badge bg-danger">Failed</span>
+                      <% } else if (project.lastBuildStatus === 'pending') { %>
+                        <span class="badge bg-warning text-dark">Pending</span>
+                      <% } else { %>
+                        <span class="badge bg-secondary">None</span>
+                      <% } %>
+                      
+                      <% if (!project.isActive) { %>
+                        <span class="badge bg-secondary ms-1">Inactive</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <% if (project.lastDeployment) { %>
+                        <%= new Date(project.lastDeployment).toLocaleString() %>
+                      <% } else { %>
+                        <span class="text-muted">Never</span>
+                      <% } %>
+                    </td>
+                    <td class="text-end">
+                      <div class="btn-group btn-group-sm">
+                        <a href="/projects/<%= project._id %>" class="btn btn-outline-secondary">Details</a>
+                        <a href="/deployments/trigger/<%= project._id %>" class="btn btn-outline-primary">Deploy</a>
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                          <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li><a class="dropdown-item" href="/projects/<%= project._id %>/edit">Edit</a></li>
+                          <li><hr class="dropdown-divider"></li>
+                          <li>
+                            <a class="dropdown-item text-danger" href="#" 
+                               data-bs-toggle="modal" 
+                               data-bs-target="#deleteProjectModal" 
+                               data-project-id="<%= project._id %>"
+                               data-project-name="<%= project.name %>">Delete</a>
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="text-center py-5">
+            <div class="mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-folder-plus text-muted" viewBox="0 0 16 16">
+                <path d="m.5 3 .04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2m5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98z"/>
+                <path d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5"/>
+              </svg>
+            </div>
+            <h5 class="mb-3">No projects found</h5>
+            <p class="text-muted mb-4">Create your first project to get started with MiniCD</p>
+            <a href="/projects/new" class="btn btn-primary px-4">
+              Create New Project
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Project Modal -->
+<div class="modal fade" id="deleteProjectModal" tabindex="-1" aria-labelledby="deleteProjectModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteProjectModalLabel">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the project "<span id="projectNameToDelete"></span>"?</p>
+        <p>This action cannot be undone. All deployment history will be permanently removed.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteProjectForm" action="/projects/delete" method="POST" class="d-inline">
+          <input type="hidden" id="projectIdToDelete" name="projectId" value="">
+          <button type="submit" class="btn btn-danger">Delete Project</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for delete modal -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Get the modal
+  var deleteModal = document.getElementById('deleteProjectModal');
+  
+  // When the modal is shown, update the project name and ID
+  deleteModal.addEventListener('show.bs.modal', function (event) {
+    // Button that triggered the modal
+    var button = event.relatedTarget;
+    
+    // Extract info from data-* attributes
+    var projectId = button.getAttribute('data-project-id');
+    var projectName = button.getAttribute('data-project-name');
+    
+    // Update the modal's content
+    var projectNameElement = document.getElementById('projectNameToDelete');
+    var projectIdInput = document.getElementById('projectIdToDelete');
+    var deleteForm = document.getElementById('deleteProjectForm');
+    
+    projectNameElement.textContent = projectName;
+    projectIdInput.value = projectId;
+    deleteForm.action = '/projects/' + projectId + '/delete';
+  });
+});
+</script>

@@ -14,7 +14,19 @@ export class AppError extends Error {
 
 export const notFoundHandler = (req: Request, res: Response, next: NextFunction): void => {
   const error = new AppError(`Route not found: ${req.originalUrl}`, 404);
-  next(error);
+  
+  // For API routes, continue to the JSON error handler
+  if (req.originalUrl.startsWith('/api/')) {
+    next(error);
+    return;
+  }
+  
+  // For web routes, render the error page
+  res.status(404).render('error', {
+    title: 'Not Found',
+    message: `The page you're looking for does not exist.`,
+    error: process.env.NODE_ENV === 'production' ? null : error
+  });
 };
 
 export const errorHandler = (
@@ -33,12 +45,23 @@ export const errorHandler = (
     console.error('Non-operational error:', err);
   }
 
-  res.status(statusCode).json({
-    success: false,
-    error: {
-      message,
-      statusCode,
-    },
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+  // If this is an API request, return JSON
+  if (req.originalUrl.startsWith('/api/')) {
+    res.status(statusCode).json({
+      success: false,
+      error: {
+        message,
+        statusCode,
+      },
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    });
+    return;
+  }
+  
+  // For web routes, render the error page
+  res.status(statusCode).render('error', {
+    title: 'Error',
+    message: message || 'An error occurred',
+    error: process.env.NODE_ENV === 'production' ? null : err
   });
 };
