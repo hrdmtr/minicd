@@ -37,21 +37,131 @@
             <div class="form-text"><%= locals.__ ? __('projects.fields.branchHelp') : 'The branch that will trigger deployments' %></div>
           </div>
           
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="port" class="form-label"><%= locals.__ ? __('projects.fields.port') : 'Container Port' %></label>
-              <input type="number" class="form-control" id="port" name="port" required
-                     min="1" max="65535" value="<%= project.port %>">
-              <div class="form-text"><%= locals.__ ? __('projects.fields.portHelp') : 'The port your application listens on inside the container' %></div>
+          <fieldset class="mb-4">
+            <legend class="fs-5 mb-3"><%= locals.__ ? __('projects.portConfig.title') : 'Port Configuration' %></legend>
+            <div class="alert alert-info mb-3">
+              <strong><%= locals.__ ? __('projects.portConfig.understandingTitle') : 'Understanding Ports:' %></strong> 
+              <%= locals.__ ? __('projects.portConfig.understandingDesc') : 'Your application has two ports - one internal (container port) and one external (host port).' %>
+              <ul class="mb-0 mt-2">
+                <li><strong><%= locals.__ ? __('projects.portConfig.containerPortName') : 'Container Port:' %></strong> 
+                <%= locals.__ ? __('projects.portConfig.containerPortDesc') : 'The port your application listens on <em>inside</em> the container (set in your Dockerfile or app)' %></li>
+                <li><strong><%= locals.__ ? __('projects.portConfig.hostPortName') : 'Host Port:' %></strong> 
+                <%= locals.__ ? __('projects.portConfig.hostPortDesc') : 'The port exposed to access your application from outside' %></li>
+              </ul>
             </div>
             
-            <div class="col-md-6 mb-3">
-              <label for="exposedPort" class="form-label"><%= locals.__ ? __('projects.fields.exposedPort') : 'Exposed Port (Optional)' %></label>
-              <input type="number" class="form-control" id="exposedPort" name="exposedPort"
-                     min="1" max="65535" value="<%= project.exposedPort || '' %>">
-              <div class="form-text"><%= locals.__ ? __('projects.fields.exposedPortHelp') : 'The port to expose on the host (leave empty for auto-assignment)' %></div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="port" class="form-label">
+                  <strong><%= locals.__ ? __('projects.fields.port') : 'Container Port' %></strong>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box ms-1" viewBox="0 0 16 16">
+                    <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
+                  </svg>
+                </label>
+                <input type="number" class="form-control" id="port" name="port" required
+                     min="1" max="65535" value="<%= project.port %>">
+                <div class="form-text">
+                  <strong><%= locals.__ ? __('projects.portConfig.important') : 'Important:' %></strong> 
+                  <%= locals.__ ? __('projects.portConfig.containerPortHelp') : 'This must match the port your application is configured to use inside the container.' %>
+                  <%= locals.__ ? __('projects.portConfig.dockerfileHelp') : 'Check your Dockerfile\'s <code>EXPOSE</code> instruction or your application\'s configuration.' %>
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="exposedPort" class="form-label">
+                  <strong><%= locals.__ ? __('projects.fields.exposedPort') : 'Host Port' %></strong>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-globe ms-1" viewBox="0 0 16 16">
+                    <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472M3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933M8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4z"/>
+                  </svg>
+                </label>
+                <div class="input-group">
+                  <select class="form-select" id="portAssignmentType" style="max-width: 170px">
+                    <option value="same" <%= !project.exposedPort ? 'selected' : '' %>>Same as container</option>
+                    <option value="specific" <%= (project.exposedPort && project.exposedPort > 0) ? 'selected' : '' %>>Specific port</option>
+                    <option value="auto" <%= (project.exposedPort === 0) ? 'selected' : '' %>>Automatic</option>
+                  </select>
+                  <input type="number" class="form-control" id="exposedPort" name="exposedPort"
+                        min="0" max="65535" value="<%= (project.exposedPort && project.exposedPort > 0) ? project.exposedPort : '' %>"
+                        <%= (!project.exposedPort || project.exposedPort === 0) ? 'style="display:none"' : '' %>>
+                  <input type="hidden" id="actualExposedPort" name="actualExposedPort" 
+                        value="<%= project.exposedPort || '' %>">
+                </div>
+                <div class="form-text" id="portHelpText">
+                  <%= locals.__ ? __('projects.fields.exposedPortHelp') : 'The port to expose on the host' %>
+                </div>
+              </div>
             </div>
-          </div>
+            
+            <div class="card border-light bg-light mb-2">
+              <div class="card-body">
+                <h6 class="card-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightbulb me-1" viewBox="0 0 16 16">
+                    <path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a1.964 1.964 0 0 0-.453-.618A5.984 5.984 0 0 1 2 6m6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1"/>
+                  </svg>
+                  <%= locals.__ ? __('projects.portConfig.tipsTitle') : 'Port Selection Tips' %>
+                </h6>
+                <ul class="mb-0 small">
+                  <li><strong><%= locals.__ ? __('projects.portConfig.sameAsTitle') : 'Same as container:' %></strong> 
+                  <%= locals.__ ? __('projects.portConfig.sameAsDesc') : 'Use when you want the external port to match the internal container port. Simple, but may cause conflicts if the port is already in use.' %></li>
+                  <li><strong><%= locals.__ ? __('projects.portConfig.specificTitle') : 'Specific port:' %></strong> 
+                  <%= locals.__ ? __('projects.portConfig.specificDesc') : 'Choose a specific external port when you need a consistent URL or when integrating with other services.' %></li>
+                  <li><strong><%= locals.__ ? __('projects.portConfig.autoTitle') : 'Automatic:' %></strong> 
+                  <%= locals.__ ? __('projects.portConfig.autoDesc') : 'Let Docker assign an available port automatically. Best for avoiding port conflicts or when running multiple containers.' %></li>
+                </ul>
+              </div>
+            </div>
+            
+            <% if (project.containerId) { %>
+              <div class="alert alert-warning mt-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-exclamation-triangle mb-1 me-2" viewBox="0 0 16 16">
+                  <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
+                  <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+                </svg>
+                <strong><%= locals.__ ? __('projects.portConfig.noteTitle') : 'Note:' %></strong> 
+                <%= locals.__ ? __('projects.portConfig.noteDesc') : 'Changing ports will require redeploying your application for the changes to take effect.' %>
+              </div>
+            <% } %>
+            
+            <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                const portTypeSelect = document.getElementById('portAssignmentType');
+                const exposedPortInput = document.getElementById('exposedPort');
+                const actualExposedPortInput = document.getElementById('actualExposedPort');
+                const portHelpText = document.getElementById('portHelpText');
+                
+                function updatePortVisibility() {
+                  const selectedValue = portTypeSelect.value;
+                  
+                  if (selectedValue === 'specific') {
+                    exposedPortInput.style.display = 'block';
+                    exposedPortInput.required = true;
+                    portHelpText.innerHTML = '<strong><%= locals.__ ? __("projects.portConfig.specificTitle") : "Specific port:" %></strong> <%= locals.__ ? __("projects.portConfig.specificHelpText") : "Choose a port number that is available on your host machine" %>';
+                    actualExposedPortInput.value = exposedPortInput.value || '';
+                  } else if (selectedValue === 'auto') {
+                    exposedPortInput.style.display = 'none';
+                    exposedPortInput.required = false;
+                    portHelpText.innerHTML = '<strong><%= locals.__ ? __("projects.portConfig.autoTitle") : "Automatic:" %></strong> <%= locals.__ ? __("projects.portConfig.autoHelpText") : "Docker will assign an available port automatically" %>';
+                    actualExposedPortInput.value = '0';
+                  } else { // same
+                    exposedPortInput.style.display = 'none';
+                    exposedPortInput.required = false;
+                    portHelpText.innerHTML = '<strong><%= locals.__ ? __("projects.portConfig.sameAsTitle") : "Same as container:" %></strong> <%= locals.__ ? __("projects.portConfig.sameAsHelpText") : "The host will use the same port number as the container" %>';
+                    actualExposedPortInput.value = '';
+                  }
+                }
+                
+                portTypeSelect.addEventListener('change', updatePortVisibility);
+                exposedPortInput.addEventListener('change', function() {
+                  if (portTypeSelect.value === 'specific') {
+                    actualExposedPortInput.value = exposedPortInput.value;
+                  }
+                });
+                
+                // Initialize visibility based on saved value
+                updatePortVisibility();
+              });
+            </script>
+          </fieldset>
           
           <hr class="my-4">
           

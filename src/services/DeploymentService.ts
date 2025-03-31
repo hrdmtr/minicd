@@ -100,7 +100,11 @@ export class DeploymentService {
       buildLog += `ℹ️ Deployment will go through ${TOTAL_STEPS} steps\n\n`;
 
       // STEP 1: Clone/pull repository
-      buildLog += `\n✅ STEP 1/${TOTAL_STEPS}: PREPARING SOURCE CODE\n`;
+      deployment.steps[0].status = 'pending';
+      deployment.steps[0].startedAt = new Date();
+      await deployment.save();
+      
+      buildLog += `\n🔄 STEP 1/${TOTAL_STEPS}: PREPARING SOURCE CODE\n`;
       buildLog += `--------------------------------------------\n`;
       buildLog += `📂 Target directory: ${repoDir}\n`;
       
@@ -109,6 +113,9 @@ export class DeploymentService {
 
       if (!gitResult.success) {
         buildLog += `❌ Failed to prepare source code. Aborting deployment.\n`;
+        deployment.steps[0].status = 'failure';
+        deployment.steps[0].finishedAt = new Date();
+        await deployment.save();
         await this.finalizeDeployment(project, deployment, 'failure', buildLog);
         return;
       }
@@ -117,13 +124,20 @@ export class DeploymentService {
       
       // Update log after step 1
       deployment.buildLog += buildLog;
+      deployment.steps[0].status = 'success';
+      deployment.steps[0].finishedAt = new Date();
       await deployment.save();
       buildLog = '';
 
       // STEP 2: Get commit hash
-      buildLog += `\n✅ STEP 2/${TOTAL_STEPS}: GETTING COMMIT INFORMATION\n`;
+      deployment.steps[1].status = 'pending';
+      deployment.steps[1].startedAt = new Date();
+      await deployment.save();
+      
+      buildLog += `\n🔄 STEP 2/${TOTAL_STEPS}: GETTING COMMIT INFORMATION\n`;
       buildLog += `--------------------------------------------\n`;
       
+      let stepSuccess = true;
       try {
         const commitHash = await GitService.getCurrentCommitHash(repoDir);
         deployment.commitHash = commitHash;
@@ -131,6 +145,7 @@ export class DeploymentService {
         buildLog += `📝 Commit hash: ${commitHash}\n`;
         buildLog += `✅ Commit information retrieved successfully.\n`;
       } catch (error) {
+        stepSuccess = false;
         const errorMessage = error instanceof Error ? error.message : String(error);
         buildLog += `⚠️ Warning: Failed to get commit hash: ${errorMessage}\n`;
         buildLog += `⚠️ Continuing deployment without commit information.\n`;
@@ -153,6 +168,7 @@ export class DeploymentService {
           await fs.promises.writeFile(path.join(repoDir, '.env'), envContent, 'utf8');
           buildLog += `📄 .env file created successfully.\n`;
         } catch (error) {
+          stepSuccess = false;
           const errorMessage = error instanceof Error ? error.message : String(error);
           buildLog += `⚠️ Warning: Failed to create .env file: ${errorMessage}\n`;
         }
@@ -162,11 +178,17 @@ export class DeploymentService {
       
       // Update log after step 2
       deployment.buildLog += buildLog;
+      deployment.steps[1].status = stepSuccess ? 'success' : 'failure';
+      deployment.steps[1].finishedAt = new Date();
       await deployment.save();
       buildLog = '';
 
       // STEP 3: Build Docker image
-      buildLog += `\n✅ STEP 3/${TOTAL_STEPS}: BUILDING DOCKER IMAGE\n`;
+      deployment.steps[2].status = 'pending';
+      deployment.steps[2].startedAt = new Date();
+      await deployment.save();
+      
+      buildLog += `\n🔄 STEP 3/${TOTAL_STEPS}: BUILDING DOCKER IMAGE\n`;
       buildLog += `--------------------------------------------\n`;
       buildLog += `🔨 Starting Docker build...\n`;
       
@@ -175,6 +197,9 @@ export class DeploymentService {
 
       if (!buildResult.success) {
         buildLog += `❌ Docker build failed. Aborting deployment.\n`;
+        deployment.steps[2].status = 'failure';
+        deployment.steps[2].finishedAt = new Date();
+        await deployment.save();
         await this.finalizeDeployment(project, deployment, 'failure', buildLog);
         return;
       }
@@ -183,11 +208,17 @@ export class DeploymentService {
       
       // Update log after step 3
       deployment.buildLog += buildLog;
+      deployment.steps[2].status = 'success';
+      deployment.steps[2].finishedAt = new Date();
       await deployment.save();
       buildLog = '';
 
       // STEP 4: Run Docker container
-      buildLog += `\n✅ STEP 4/${TOTAL_STEPS}: STARTING CONTAINER\n`;
+      deployment.steps[3].status = 'pending';
+      deployment.steps[3].startedAt = new Date();
+      await deployment.save();
+      
+      buildLog += `\n🔄 STEP 4/${TOTAL_STEPS}: STARTING CONTAINER\n`;
       buildLog += `--------------------------------------------\n`;
       
       if (project.containerId) {
@@ -199,17 +230,26 @@ export class DeploymentService {
 
       if (!runResult.success) {
         buildLog += `❌ Failed to start Docker container. Aborting deployment.\n`;
+        deployment.steps[3].status = 'failure';
+        deployment.steps[3].finishedAt = new Date();
+        await deployment.save();
         await this.finalizeDeployment(project, deployment, 'failure', buildLog);
         return;
       }
       
       // Update log after step 4
       deployment.buildLog += buildLog;
+      deployment.steps[3].status = 'success';
+      deployment.steps[3].finishedAt = new Date();
       await deployment.save();
       buildLog = '';
 
       // STEP 5: Finalize deployment
-      buildLog += `\n✅ STEP 5/${TOTAL_STEPS}: FINALIZING DEPLOYMENT\n`;
+      deployment.steps[4].status = 'pending';
+      deployment.steps[4].startedAt = new Date();
+      await deployment.save();
+      
+      buildLog += `\n🔄 STEP 5/${TOTAL_STEPS}: FINALIZING DEPLOYMENT\n`;
       buildLog += `--------------------------------------------\n`;
       
       // Update container information
@@ -220,11 +260,20 @@ export class DeploymentService {
       }
       
       // Set up exposed port info
-      if (project.exposedPort) {
+      // If Docker assigned a port automatically, update project and deployment
+      if (runResult.exposedPort !== undefined) {
+        // Update exposedPort with the value returned from Docker (could be auto-assigned or user specified)
+        project.exposedPort = runResult.exposedPort;
+        deployment.exposedPort = runResult.exposedPort;
+        buildLog += `🔌 Application accessible at: http://localhost:${runResult.exposedPort}\n`;
+        deployment.containerUrl = `http://localhost:${runResult.exposedPort}`;
+      } else if (project.exposedPort && project.exposedPort > 0) {
+        // Use the existing exposedPort from project
         buildLog += `🔌 Application accessible at: http://localhost:${project.exposedPort}\n`;
         deployment.exposedPort = project.exposedPort;
         deployment.containerUrl = `http://localhost:${project.exposedPort}`;
       } else {
+        // Fall back to using the container port
         buildLog += `🔌 Application accessible at: http://localhost:${project.port}\n`;
         deployment.exposedPort = project.port;
         deployment.containerUrl = `http://localhost:${project.port}`;
@@ -247,6 +296,10 @@ export class DeploymentService {
       buildLog += `==================================================\n`;
 
       // Finalize successful deployment
+      deployment.steps[4].status = 'success';
+      deployment.steps[4].finishedAt = new Date();
+      await deployment.save();
+      
       await this.finalizeDeployment(project, deployment, 'success', buildLog);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -263,6 +316,14 @@ export class DeploymentService {
       
       // Log the error for debugging
       console.error(`Deployment error for project ${project.name}:`, error);
+      
+      // Mark current step as failed if any step is still pending
+      for (const step of deployment.steps) {
+        if (step.status === 'pending') {
+          step.status = 'failure';
+          step.finishedAt = new Date();
+        }
+      }
       
       await this.finalizeDeployment(
         project,
@@ -287,6 +348,16 @@ export class DeploymentService {
       deployment.buildStatus = status;
       deployment.buildLog += buildLog;
       deployment.finishedAt = new Date();
+      
+      // Mark any not_started steps as skipped in case of failure
+      if (status === 'failure') {
+        for (const step of deployment.steps) {
+          if (step.status === 'not_started') {
+            step.status = 'failure';
+          }
+        }
+      }
+      
       await deployment.save();
 
       // Update project

@@ -46,7 +46,7 @@ export const createProjectWeb = async (
 ): Promise<void> => {
   try {
     const { 
-      name, repositoryUrl, branch, port, exposedPort, isActive,
+      name, repositoryUrl, branch, port, exposedPort, actualExposedPort, isActive,
       envKeys, envValues, envSecrets 
     } = req.body;
     
@@ -79,13 +79,26 @@ export const createProjectWeb = async (
       }
     }
     
+    // Handle port assignment
+    let exposedPortValue;
+    if (actualExposedPort === '0') {
+      // Use automatic port assignment
+      exposedPortValue = 0;
+    } else if (actualExposedPort && actualExposedPort.trim() !== '') {
+      // Use specific port
+      exposedPortValue = parseInt(actualExposedPort, 10);
+    } else {
+      // Use same as container port (undefined)
+      exposedPortValue = undefined;
+    }
+    
     // Create project
     const project = await Project.create({
       name,
       repositoryUrl,
       branch: branch || 'main',
       port: parseInt(port, 10),
-      exposedPort: exposedPort ? parseInt(exposedPort, 10) : undefined,
+      exposedPort: exposedPortValue,
       isActive: isActive === 'true',
       environmentVariables
     });
@@ -173,7 +186,7 @@ export const updateProjectWeb = async (
 ): Promise<void> => {
   try {
     const { 
-      name, repositoryUrl, branch, port, exposedPort, isActive, 
+      name, repositoryUrl, branch, port, exposedPort, actualExposedPort, isActive, 
       envKeys, envValues, envSecrets 
     } = req.body;
     
@@ -192,12 +205,19 @@ export const updateProjectWeb = async (
     if (repositoryUrl !== undefined) project.repositoryUrl = repositoryUrl;
     if (branch !== undefined) project.branch = branch;
     if (port !== undefined) project.port = parseInt(port, 10);
-    if (exposedPort) {
-      project.exposedPort = parseInt(exposedPort, 10);
+    
+    // Handle port assignment
+    if (actualExposedPort === '0') {
+      // Use automatic port assignment
+      project.exposedPort = 0;
+    } else if (actualExposedPort && actualExposedPort.trim() !== '') {
+      // Use specific port
+      project.exposedPort = parseInt(actualExposedPort, 10);
     } else {
-      // If exposedPort is empty string or not provided, remove it
+      // Use same as container port (undefined)
       project.exposedPort = undefined;
     }
+    
     project.isActive = isActive === 'true';
     
     // Process environment variables
